@@ -1,9 +1,8 @@
 package com.politrons.api
 
 import com.google.gson.Gson
-import com.politrons.service.CurrencyExchangeService
-import com.politrons.service.impl.CurrencyExchangeServiceImpl
 import com.politrons.model.CurrencyExchangeRequest
+import com.politrons.service.CurrencyExchangeService
 import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.{Service, http}
 import com.twitter.util.Future
@@ -20,8 +19,7 @@ case class CurrencyExchangeApi(currencyExchangeEngine: CurrencyExchangeService) 
 
   /**
    * Here we define the service with the endpoint [/api/v1/convert] which expect some query params.
-   * Once we receive the request we create a ZIO program that run asynchronously in a Fiber, so there's
-   * non blocking request logic.
+   * Once we receive the request we create a ZIO program.
    */
   def createService(): Task[Service[Request, Response]] =
     ZIO.effect {

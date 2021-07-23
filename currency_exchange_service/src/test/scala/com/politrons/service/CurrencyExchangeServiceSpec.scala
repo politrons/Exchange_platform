@@ -1,6 +1,5 @@
 package com.politrons.service
 
-import com.politrons.service.impl.CurrencyExchangeServiceImpl
 import com.politrons.model.CurrencyExchangeRequest
 import org.scalatest.{BeforeAndAfterAll, FeatureSpec, GivenWhenThen}
 import zio.{Runtime, ZLayer}
@@ -17,7 +16,7 @@ class CurrencyExchangeServiceSpec extends FeatureSpec with GivenWhenThen with Be
 
     scenario("GBR to EUR exchange successful") {
       Given("an instance of CurrencyExchangeEngine")
-      val engine = CurrencyExchangeServiceImpl()
+      val engine = CurrencyExchangeService()
       When("I create a currencyExchangeProgram passing an exchange from EUR to GBR")
       val dependencies = ZLayer.succeed(CurrencyExchangeRequest("GBR", "EUR", BigDecimal(102.6)))
       val currencyExchangeProgram = engine.exchange()
@@ -32,7 +31,7 @@ class CurrencyExchangeServiceSpec extends FeatureSpec with GivenWhenThen with Be
 
     scenario("GBR to Foo exchange error since Foo does not exist") {
       Given("an instance of CurrencyExchangeEngine")
-      val engine = CurrencyExchangeServiceImpl()
+      val engine = CurrencyExchangeService()
       When("I create a currencyExchangeProgram passing an exchange from EUR to GBR")
       val dependencies = ZLayer.succeed(CurrencyExchangeRequest("GBR", "Foo", BigDecimal(102.6)))
       val currencyExchangeProgram = engine.exchange()

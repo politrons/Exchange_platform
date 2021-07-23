@@ -50,7 +50,7 @@ object ConversionServer {
 
   /**
    * We create a [ListeningServer] where we specify the operator [withRequestTimeout(5.seconds)]
-   * Allowing close the comunication after that period of time.
+   * Allowing close the communication after that period of time.
    */
   private def createServer(port: Int, service: Service[Request, Response]): Task[ListeningServer] = {
     ZIO.effect {

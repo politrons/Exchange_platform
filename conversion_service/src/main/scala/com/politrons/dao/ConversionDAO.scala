@@ -57,7 +57,7 @@ case class ConversionDAO() {
 
   /**
    * Function to calc the CurrencyExchange from one coin to another.
-   * ¡ */
+   **/
   def convert(fromCurrency: String,
               toCurrency: String,
               amount: Double): ZIO[Any, Throwable, Conversion] = {

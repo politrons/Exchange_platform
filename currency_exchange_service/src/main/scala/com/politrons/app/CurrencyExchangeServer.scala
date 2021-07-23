@@ -1,9 +1,9 @@
 package com.politrons.app
 
 import com.politrons.api.CurrencyExchangeApi
-import com.politrons.service.impl.CurrencyExchangeServiceImpl
-import com.twitter.finagle.{Http, ListeningServer, Service}
+import com.politrons.service.CurrencyExchangeService
 import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.{Http, ListeningServer, Service}
 import com.twitter.util.Await
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.{Logger, LoggerFactory}
@@ -23,7 +23,7 @@ object CurrencyExchangeServer {
   def main(args: Array[String]): Unit = {
     val port = 9995
     val serverProgram = start(port)
-    val engine = CurrencyExchangeServiceImpl()
+    val engine = CurrencyExchangeService()
     val currencyExchangeApi = CurrencyExchangeApi(engine)
     Runtime.global.unsafeRun(serverProgram.provideLayer(ZLayer.succeed(currencyExchangeApi)))
   }

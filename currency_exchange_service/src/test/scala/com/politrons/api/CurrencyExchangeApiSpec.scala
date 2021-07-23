@@ -1,17 +1,19 @@
 package com.politrons.api
 
 import com.google.gson.Gson
-import com.politrons.service.CurrencyExchangeService
 import com.politrons.model.CurrencyExchangeRequest
+import com.politrons.service.CurrencyExchangeService
 import com.politrons.view.CurrencyExchange
 import com.twitter.finagle.http.RequestBuilder
 import com.twitter.util.Await
+import org.mockito.Mockito.when
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, FeatureSpec, GivenWhenThen}
 import zio.{Has, Runtime, URIO}
 
 import java.net.URL
 
-class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with BeforeAndAfterAll {
+class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with BeforeAndAfterAll  with MockitoSugar {
 
   private val gson = new Gson()
 
@@ -20,7 +22,8 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
     scenario("Invocation to CurrencyExchangeApi with correct request and correct response from engine ") {
       Given("a mock engine that return success response and a CurrencyExchangeApi service")
 
-      val mockCurrencyExchange = MockCurrencyExchange(URIO.succeed(Right(CurrencyExchange("1.11", "113.886", "102.6"))))
+      val mockCurrencyExchange = mock[CurrencyExchangeService]
+      when(mockCurrencyExchange.exchange()).thenReturn(URIO.succeed(Right(CurrencyExchange("1.11", "113.886", "102.6"))))
 
       val api = CurrencyExchangeApi(mockCurrencyExchange)
       When("I invoke the program and pass into the service a Request with proper values")
@@ -45,7 +48,8 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
   scenario("Invocation to CurrencyExchangeApi with correct request and wrong response from engine ") {
     Given("a mock engine that return success response and a CurrencyExchangeApi service")
 
-    val mockCurrencyExchange = MockCurrencyExchange(URIO.succeed(Left(new IllegalArgumentException())))
+    val mockCurrencyExchange = mock[CurrencyExchangeService]
+    when(mockCurrencyExchange.exchange()).thenReturn(URIO.succeed(Left(new IllegalArgumentException())))
 
     val api = CurrencyExchangeApi(mockCurrencyExchange)
     When("I invoke the program and pass into the service a Request with proper values")
@@ -61,14 +65,5 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
     val response = Await.result(service(request))
     assert(response.statusCode == 500)
 
-  }
-
-  /**
-   * I found a bug with scalaMock, so to be fast for the challenge and dont get stuck I implement my own mock.
-   */
-  case class MockCurrencyExchange(mockProgram: URIO[Has[CurrencyExchangeRequest], Either[Throwable, CurrencyExchange]]) extends CurrencyExchangeService {
-    override def exchange(): URIO[Has[CurrencyExchangeRequest], Either[Throwable, CurrencyExchange]] = {
-      mockProgram
-    }
   }
 }
