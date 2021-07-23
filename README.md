@@ -8,6 +8,8 @@ one currency to another.
 * **Currency_exchange_service:** Inner server of the platform that the **Conversion_service** invoke to make the calc 
 between currencies.
 
+![My image](img/exchange_platform.png)
+
 ## Technology
 
 * For the Rest API and Rest connector I use [Finagle](https://twitter.github.io/finagle/) which provide the possibility
