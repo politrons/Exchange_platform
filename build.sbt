@@ -33,6 +33,10 @@ lazy val currency_exchange_service = project
     commonSettings
   )
 
-libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-)
+
+ThisBuild / assemblyMergeStrategy  := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case _ =>MergeStrategy.first
+}
+
+
