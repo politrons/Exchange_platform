@@ -1,6 +1,14 @@
-# Exchange_platform
+# Exchange platform
 
-## Summary
+A Microservice platform formed by two micro-services:
+
+*  **Conversion_service:** Entry point of the platform. Receive the request to obtain the currency echange from
+one currency to another.
+   
+* **Currency_exchange_service:** Inner server of the platform that the **Conversion_service** invoke to make the calc 
+between currencies.
+
+## Technology
 
 * For the Rest API and Rest connector I use [Finagle](https://twitter.github.io/finagle/) which provide the possibility
   to use the reactive features:
@@ -31,15 +39,20 @@ In my application I invested around 70% of the time implementing the test framew
  
   Just to be clear, the Integration test are just a proof that our Unit test are well designed and the Mock behaves as I expect. None IT test should ever fail. And if it does,
   you have to reproduce it in Unit test.
-  
-## How to build
-
-
 
 ## How to run
 
-java -cp conversion_service-assembly-0.1.0-SNAPSHOT.jar  com.politrons.app.ConversionServer
-java -cp currency_exchange_service-assembly-0.1.0-SNAPSHOT.jar com.politrons.app.CurrencyExchangeServer
+I create a **Makefile** to add all the option to interact with the platform:
+
+* **clean:** Clean all the resources in the target folder.
+* **build:** Build the platform and generate Fat jar for each service.
+* **run-conversion:** Run the Conversion server.
+* **run-currency-exchange:** Run the Currency exchange server.
+* **test-request:** Run a Post request against the platform.
+
+````
+Makefile clean|build|run-conversion|run-currency-exchange|test-request
+````
 
 ## Stack
 
