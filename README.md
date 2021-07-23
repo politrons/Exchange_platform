@@ -17,6 +17,21 @@
   lazy evaluation, performance improvements since the program run in Fibers(Green threads) instead in OS Threads, and also DI mechanism with ZLayers.
 
 
+## Testing
+
+![My image](img/testPyramid.png)
+
+**To go fast you have to go well** this quote of Robert C. Martin express perfectly what TDD and BDD is about. You should think first in all corner cases of your program, and then implement
+one by one committing every scenario to have a quick feedback about your program.
+
+In my application I invested around 70% of the time implementing the test framework, the type of testing implemented are described below.
+
+* **Unit**: I used [scalatest](https://www.scalatest.org) together with some local mocks to Mock external resources of your class.
+* **Integration**: I create the **test-framework** module with dependencies of both modules to test the end to end of the platform.
+ 
+  Just to be clear, the Integration test are just a proof that our Unit test are well designed and the Mock behaves as I expect. None IT test should ever fail. And if it does,
+  you have to reproduce it in Unit test.
+  
 ## How to build
 
 
