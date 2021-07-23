@@ -57,26 +57,36 @@ case class ConversionDAO() {
 
   /**
    * Function to calc the CurrencyExchange from one coin to another.
-¡   */
+   * ¡ */
   def convert(fromCurrency: String,
               toCurrency: String,
               amount: Double): ZIO[Any, Throwable, Conversion] = {
     (for {
       request <- createRequest(fromCurrency, toCurrency, amount)
       response <- ZIO.fromFuture(_ => transformFutures(client(request)))
-      currencyExchange <- transformToCurrencyExchange(response)
+      responseJson <- getJsonFromResponse(response)
+      currencyExchange <- transformToCurrencyExchange(responseJson)
     } yield currencyExchange).catchAll(t => {
       logger.error(s"[ConversionDAO] Error obtaining exchange from external service. Caused by ${ExceptionUtils.getStackTrace(t)}")
       ZIO.fail(t)
     })
   }
 
+   private def getJsonFromResponse(response: Response): Task[String] = {
+    ZIO.effect {
+      response.statusCode match {
+        case 200 => response.getContentString()
+        case _ => throw new IllegalStateException(s"Error response ${response.statusCode} from CurrencyExchange server")
+      }
+    }
+  }
+
   /**
    * Transform the Response into CurrencyExchange controlling all possible side-effects.
    */
-  private def transformToCurrencyExchange(response: Response): Task[Conversion] = {
+  private def transformToCurrencyExchange(jsonResponse: String): Task[Conversion] = {
     ZIO.effect {
-      gson.fromJson(response.getContentString(), classOf[Conversion])
+      gson.fromJson(jsonResponse, classOf[Conversion])
     }
   }
 
@@ -89,9 +99,9 @@ case class ConversionDAO() {
     ZIO.effect {
       RequestBuilder()
         .url(new URL(s"http://localhost:9995/$endpoint" +
-          s"?from=${fromCurrency}" +
-          s"&to=${toCurrency}" +
-          s"&amount=${amount}"))
+          s"?from=$fromCurrency" +
+          s"&to=$toCurrency" +
+          s"&amount=$amount"))
         .buildGet()
     }
   }

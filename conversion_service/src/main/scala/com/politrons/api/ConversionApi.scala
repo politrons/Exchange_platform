@@ -11,7 +11,7 @@ import com.twitter.finagle.{Service, http}
 import com.twitter.util.Future
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.{Logger, LoggerFactory}
-import zio.{Has, Runtime, Task, ZIO, ZLayer, ZManaged}
+import zio.{Runtime, Task, ZIO, ZLayer}
 
 case class ConversionApi(service: ConversionService,
                          dao: ConversionDAO) {
@@ -35,8 +35,8 @@ case class ConversionApi(service: ConversionService,
               case "/api/convert/" =>
                 logger.debug(s"Request uri param:${req.uri}")
                 val conversionProgram = (for {
-                  currencyExchange <- service.convert()
-                  response <- transformCurrencyExchangeIntoJson(req, currencyExchange)
+                  conversion <- service.convert()
+                  response <- transformCurrencyExchangeIntoJson(req, conversion)
                 } yield Future.value(response)).catchAll(t => {
                   logger.error(s"[ConversionApi] Error in conversion request. Caused by ${ExceptionUtils.getStackTrace(t)}")
                   ZIO.succeed(Future(Response(req.version, Status.InternalServerError)))
@@ -54,11 +54,11 @@ case class ConversionApi(service: ConversionService,
     gson.fromJson(req.getContentString(), classOf[ConvertCommand])
   }
 
-  private def transformCurrencyExchangeIntoJson(req: Request, currencyExchange: Conversion): Task[Response] = {
+  private def transformCurrencyExchangeIntoJson(req: Request, conversion: Conversion): Task[Response] = {
     ZIO.effect {
       val response = Response(req.version, Status.Ok)
       response
-        .setContentString(gson.toJson(currencyExchange))
+        .setContentString(gson.toJson(conversion))
       response
     }
   }

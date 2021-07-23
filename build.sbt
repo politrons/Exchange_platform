@@ -33,10 +33,18 @@ lazy val currency_exchange_service = project
     commonSettings
   )
 
+lazy val test_framework = project
+  .in(file("test_framework"))
+  .dependsOn(conversion_service, currency_exchange_service)
+  .settings(
+    name := "test_framework",
+    assembly / test := (Test / test).value,
+    commonSettings
+  )
 
-ThisBuild / assemblyMergeStrategy  := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case _ =>MergeStrategy.first
+ThisBuild / assemblyMergeStrategy := {
+  case PathList("META-INF", xs@_*) => MergeStrategy.discard
+  case _ => MergeStrategy.first
 }
 
 

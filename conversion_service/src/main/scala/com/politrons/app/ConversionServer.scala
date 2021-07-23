@@ -1,7 +1,7 @@
 package com.politrons.app
 
-import com.politrons.dao.ConversionDAO
 import com.politrons.api.ConversionApi
+import com.politrons.dao.ConversionDAO
 import com.politrons.service.ConversionService
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, ListeningServer, Service}
@@ -9,6 +9,7 @@ import com.twitter.util.Await
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.{Logger, LoggerFactory}
 import zio.{Has, Runtime, Task, ZIO, ZLayer, ZManaged}
+import com.twitter.conversions.DurationOps._
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -17,7 +18,6 @@ object ConversionServer {
   private val logger: Logger = LoggerFactory.getLogger("ConversionServer")
 
   implicit val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
-
 
   /**
    * Entry point of the program to be started.
@@ -49,14 +49,13 @@ object ConversionServer {
   }
 
   /**
-   * We create a [ListeningServer] where we specify the operator [withStreaming(enabled = true)]
-   * Allowing a communication between client-server with an infinite body, using a stream with
-   * [Reader-Writable]
+   * We create a [ListeningServer] where we specify the operator [withRequestTimeout(5.seconds)]
+   * Allowing close the comunication after that period of time.
    */
   private def createServer(port: Int, service: Service[Request, Response]): Task[ListeningServer] = {
     ZIO.effect {
       Http.server
-        .withStreaming(enabled = true)
+        .withRequestTimeout(5.seconds)
         .serve(s"0.0.0.0:$port", service)
     }
   }
