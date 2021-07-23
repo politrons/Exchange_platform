@@ -18,7 +18,7 @@ between currencies.
   * **Retry strategy:** To handle error in communications and retry with a specific strategy
   * **Circuit breaker:** A fail fast feature, to control that when a server is down, after apply 
     the retry strategy close the communication until it detects the server is responding again.
-  * **Observability:**  We add a monitoring which it subscribe to error in communications, to allow us
+  * **Observability:**  To add a monitoring which it subscribe to error in communications, to allow us
     make some strategies in case we need.
   
 
