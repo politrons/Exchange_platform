@@ -8,6 +8,7 @@ import com.twitter.util.Await
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.{Logger, LoggerFactory}
 import zio.{Has, Runtime, Task, ZIO, ZLayer, ZManaged}
+import com.twitter.conversions.DurationOps._
 
 import scala.concurrent.ExecutionContextExecutor
 
@@ -58,6 +59,6 @@ object CurrencyExchangeServer {
   }
 
   def stop(): Unit = {
-    if (server != null) Await.result(server.close())
+    if (server != null) Await.result(server.close(0.seconds))
   }
 }

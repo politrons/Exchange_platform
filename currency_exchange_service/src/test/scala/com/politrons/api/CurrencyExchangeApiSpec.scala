@@ -1,7 +1,6 @@
 package com.politrons.api
 
 import com.google.gson.Gson
-import com.politrons.model.CurrencyExchangeRequest
 import com.politrons.service.CurrencyExchangeService
 import com.politrons.view.CurrencyExchange
 import com.twitter.finagle.http.RequestBuilder
@@ -9,7 +8,8 @@ import com.twitter.util.Await
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, FeatureSpec, GivenWhenThen}
-import zio.{Has, Runtime, URIO}
+import zio.{Runtime, URIO}
+import com.twitter.conversions.DurationOps._
 
 import java.net.URL
 
@@ -30,7 +30,7 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
       val serviceProgram = api.createService()
       val service = Runtime.global.unsafeRun(serviceProgram)
       val request = RequestBuilder()
-        .url(new URL(s"http://localhost:9995/api/v1/convert" +
+        .url(new URL(s"http://localhost:10000/api/v1/convert" +
           s"?from=GBR" +
           s"&to=EUR" +
           s"&amount=102.6"))
@@ -42,7 +42,7 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
       assert(currencyExchange.exchange == "1.11")
       assert(currencyExchange.original == "102.6")
       assert(currencyExchange.amount == "113.886")
-      Await.result(service.close())
+      Await.result(service.close(0.seconds))
     }
   }
 
@@ -57,7 +57,7 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
     val serviceProgram = api.createService()
     val service = Runtime.global.unsafeRun(serviceProgram)
     val request = RequestBuilder()
-      .url(new URL(s"http://localhost:9995/api/v1/convert" +
+      .url(new URL(s"http://localhost:10000/api/v1/convert" +
         s"?from=GBR" +
         s"&to=EUR" +
         s"&amount=102.6"))
@@ -65,6 +65,6 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
     Then("The service render Internal server error.")
     val response = Await.result(service(request))
     assert(response.statusCode == 500)
-    Await.result(service.close())
+    Await.result(service.close(0.seconds))
   }
 }

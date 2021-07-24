@@ -10,6 +10,7 @@ import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, FeatureSpec, GivenWhenThen}
 import zio.{Runtime, ZIO}
+import com.twitter.conversions.DurationOps._
 
 case class ConversionApiSpec() extends FeatureSpec with GivenWhenThen with BeforeAndAfterAll with MockitoSugar {
 
@@ -39,10 +40,11 @@ case class ConversionApiSpec() extends FeatureSpec with GivenWhenThen with Befor
         }
         service <- api.createService()
         futureResponse <- ZIO.effect(service(request))
-      } yield futureResponse
-      val futureResponse = Runtime.global.unsafeRun(futureResponseProgram)
+        response <- ZIO.effect(Await.result(futureResponse))
+        _ <- ZIO.effect(Await.result(service.close(0.seconds)))
+      } yield response
+      val response = Runtime.global.unsafeRun(futureResponseProgram)
       Then("The response is successful")
-      val response = Await.result(futureResponse)
       assert(response.statusCode == 200)
       val conversion = gson.fromJson(response.getContentString(), classOf[Conversion])
       assert(conversion != null)
@@ -71,10 +73,11 @@ case class ConversionApiSpec() extends FeatureSpec with GivenWhenThen with Befor
         }
         service <- api.createService()
         futureResponse <- ZIO.effect(service(request))
-      } yield futureResponse
-      val futureResponse = Runtime.global.unsafeRun(futureResponseProgram)
+        response <- ZIO.effect(Await.result(futureResponse))
+        _ <- ZIO.effect(Await.result(service.close()))
+      } yield response
+      val response = Runtime.global.unsafeRun(futureResponseProgram)
       Then("The response is wrong")
-      val response = Await.result(futureResponse)
       assert(response.statusCode == 500)
     }
   }

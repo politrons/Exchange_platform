@@ -3,15 +3,14 @@ package com.politrons.app
 import com.politrons.api.ConversionApi
 import com.politrons.dao.ConversionDAO
 import com.politrons.service.ConversionService
+import com.twitter.conversions.DurationOps._
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, ListeningServer, Service}
-import com.twitter.util.{Await, Duration}
+import com.twitter.util.Await
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.{Logger, LoggerFactory}
 import zio.{Has, Runtime, Task, ZIO, ZLayer, ZManaged}
-import com.twitter.conversions.DurationOps._
 
-import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContextExecutor
 
 object ConversionServer {
@@ -65,7 +64,7 @@ object ConversionServer {
   }
 
   def stop(): Unit = {
-    if (server != null) Await.result(server.close(Duration(0, TimeUnit.SECONDS)))
+    if (server != null) Await.result(server.close(0.seconds))
   }
 }
 
