@@ -42,6 +42,7 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
       assert(currencyExchange.exchange == "1.11")
       assert(currencyExchange.original == "102.6")
       assert(currencyExchange.amount == "113.886")
+      Await.result(service.close())
     }
   }
 
@@ -64,6 +65,6 @@ class CurrencyExchangeApiSpec extends FeatureSpec with GivenWhenThen with Before
     Then("The service render Internal server error.")
     val response = Await.result(service(request))
     assert(response.statusCode == 500)
-
+    Await.result(service.close())
   }
 }

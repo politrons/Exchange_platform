@@ -28,7 +28,8 @@ object CurrencyExchangeServiceMock {
   }
 
   def stop(): Unit = {
-    server.close(Time.fromNanoseconds(1))
+    if (server != null)
+      Await.result(server.close())
   }
 
 }

@@ -36,13 +36,13 @@ object ConversionServer {
    * We pass a Dependency to the program with [ConversionApi],
    * to define the endpoints.
    */
-  def start(port: Int): ZIO[Has[ConversionApi], Throwable, Unit] = {
+  def start(port: Int): ZIO[Has[ConversionApi], Throwable, ListeningServer] = {
     (for {
       conversionApi <- ZManaged.service[ConversionApi].useNow
       service <- conversionApi.createService()
       server <- createServer(port, service)
-      _ <- ZIO.effect(Await.ready(server))
-    } yield logger.info(s"[ConversionServer] server up and running in port $port")).catchAll { t =>
+      _ <- ZIO.effect(logger.info(s"[ConversionServer] server up and running in port $port"))
+    } yield Await.ready(server)).catchAll { t =>
       logger.error(s"[ConversionServer] Error initializing. Caused by ${ExceptionUtils.getStackTrace(t)}")
       ZIO.fail(t)
     }

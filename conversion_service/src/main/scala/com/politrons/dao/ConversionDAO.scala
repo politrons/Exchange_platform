@@ -42,15 +42,16 @@ case class ConversionDAO() {
 
   /**
    * Http client configuration where we define the observability, retry strategy, http2.0 transport
-   * protocol, and backoff between each retries.
+   * protocol,request timeout and backoff between each retries.
    * Finagle by default implement circuit breaker, so unless we want to change the configuration or
    * disable this feature, there's nothing we have to configure.
    */
   private val client: Service[Request, Response] =
     Http
       .client
-      .withMonitor(monitor)
       .withHttp2
+      .withMonitor(monitor)
+      .withRequestTimeout(Duration(5, TimeUnit.SECONDS))
       .withRetryBudget(budget)
       .withRetryBackoff(Backoff.const(Duration(2, TimeUnit.SECONDS)))
       .newService(s"localhost:9995")
