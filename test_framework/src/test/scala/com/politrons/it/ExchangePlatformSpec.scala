@@ -7,14 +7,19 @@ import com.twitter.finagle.Http
 import com.twitter.finagle.http.{Method, Request, Response}
 import com.twitter.util.{Await, Future}
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfterAll, FeatureSpec, GivenWhenThen}
+import org.scalatest.{BeforeAndAfterEach, FeatureSpec, GivenWhenThen}
 
 import scala.concurrent.{ExecutionContextExecutor, Future => ScalaFuture}
 
-case class ExchangePlatformSpec() extends FeatureSpec with GivenWhenThen with BeforeAndAfterAll with MockitoSugar {
+case class ExchangePlatformSpec() extends FeatureSpec with GivenWhenThen with BeforeAndAfterEach with MockitoSugar {
 
   private implicit val ec: ExecutionContextExecutor = concurrent.ExecutionContext.global
   private val gson = new Gson()
+
+  override def afterEach(): Unit = {
+    ConversionServer.stop()
+    CurrencyExchangeServer.stop()
+  }
 
   feature("Exchange platform") {
 
@@ -52,7 +57,6 @@ case class ExchangePlatformSpec() extends FeatureSpec with GivenWhenThen with Be
       assert(conversion.exchange == "1.11")
       assert(conversion.amount == "113.886")
       assert(conversion.original == "102.6")
-
     }
 
 

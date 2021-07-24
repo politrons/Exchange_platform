@@ -6,12 +6,6 @@ import zio.{Runtime, ZLayer}
 
 class CurrencyExchangeServiceSpec extends FeatureSpec with GivenWhenThen with BeforeAndAfterAll {
 
-  override def beforeAll(): Unit = {
-  }
-
-  override def afterAll(): Unit = {
-  }
-
   feature("Currency Exchange Engine") {
 
     scenario("GBR to EUR exchange successful") {

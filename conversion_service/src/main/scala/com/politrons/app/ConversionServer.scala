@@ -5,12 +5,13 @@ import com.politrons.dao.ConversionDAO
 import com.politrons.service.ConversionService
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, ListeningServer, Service}
-import com.twitter.util.Await
+import com.twitter.util.{Await, Duration}
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.{Logger, LoggerFactory}
 import zio.{Has, Runtime, Task, ZIO, ZLayer, ZManaged}
 import com.twitter.conversions.DurationOps._
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContextExecutor
 
 object ConversionServer {
@@ -18,6 +19,8 @@ object ConversionServer {
   private val logger: Logger = LoggerFactory.getLogger("ConversionServer")
 
   implicit val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
+
+  private var server: ListeningServer = _
 
   /**
    * Entry point of the program to be started.
@@ -28,7 +31,8 @@ object ConversionServer {
     val service = ConversionService()
     val repository = ConversionDAO()
     val conversionApi = ConversionApi(service, repository)
-    Runtime.global.unsafeRun(serverProgram.provideLayer(ZLayer.succeed(conversionApi)))
+    server = Runtime.global.unsafeRun(serverProgram.provideLayer(ZLayer.succeed(conversionApi)))
+    Await.result(server)
   }
 
   /**
@@ -42,7 +46,7 @@ object ConversionServer {
       service <- conversionApi.createService()
       server <- createServer(port, service)
       _ <- ZIO.effect(logger.info(s"[ConversionServer] server up and running in port $port"))
-    } yield Await.ready(server)).catchAll { t =>
+    } yield server).catchAll { t =>
       logger.error(s"[ConversionServer] Error initializing. Caused by ${ExceptionUtils.getStackTrace(t)}")
       ZIO.fail(t)
     }
@@ -58,6 +62,10 @@ object ConversionServer {
         .withRequestTimeout(5.seconds)
         .serve(s"0.0.0.0:$port", service)
     }
+  }
+
+  def stop(): Unit = {
+    if (server != null) Await.result(server.close(Duration(0, TimeUnit.SECONDS)))
   }
 }
 

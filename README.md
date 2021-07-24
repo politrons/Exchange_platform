@@ -44,6 +44,8 @@ In my application I invested around 70% of the time implementing the test framew
 
 ## How to run
 
+To being able to build and run this project, it will require you have `````sbt````` installed.
+
 I create a **Makefile** to add all the option to interact with the platform:
 
 * **clean:** Clean all the resources in the target folder.
