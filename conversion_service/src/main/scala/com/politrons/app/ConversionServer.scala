@@ -33,7 +33,7 @@ object ConversionServer {
 
   /**
    * ZIO program to start up the [Finagle] server in a specific port.
-   * We pass a Dependency to the program with [ConversionService],
+   * We pass a Dependency to the program with [ConversionApi],
    * to define the endpoints.
    */
   def start(port: Int): ZIO[Has[ConversionApi], Throwable, Unit] = {
