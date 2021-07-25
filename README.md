@@ -61,6 +61,15 @@ Once we pass all the test and we build the image, we create a container through 
 docker run -p 9994:9994 exchange
 ````
 
+To hit the platform you can run a curl like ths one:
+
+````
+curl --header "Content-Type: application/json" \
+     --request POST \
+     --data '{"fromCurrency": "GBR", "toCurrency" : "EUR", "amount" : 102.6}' \
+     http://localhost:9994/api/convert/
+````
+
 ### Makefile
 
 To being able to build and run this project, it will require you have `````sbt````` installed.
