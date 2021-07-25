@@ -39,13 +39,7 @@ case class ConversionApi(service: ConversionService,
                   response <- transformCurrencyExchangeIntoJson(req, conversion)
                 } yield Future.value(response)).catchAll(t => {
                   logger.error(s"[ConversionApi] Error in conversion request. Caused by ${ExceptionUtils.getStackTrace(t)}")
-                  val errorResponse =
-                    s"""
-                       |{ "message":"${t.getMessage}"}
-                       |""".stripMargin
-                  val response = Response(req.version, Status.InternalServerError)
-                  response.setContentString(errorResponse)
-                  response.setContentTypeJson()
+                  val response: Response = createErrorResponse(req, t)
                   ZIO.succeed(Future(response))
                 })
                 val dependencies = ZLayer.succeed(crateConversionCommand(req)) ++ ZLayer.succeed(dao)
@@ -56,6 +50,17 @@ case class ConversionApi(service: ConversionService,
         }
       }
     }
+
+  private def createErrorResponse(req: Request, t: Throwable): Response = {
+    val errorResponse =
+      s"""
+         |{ "message":"${t.getMessage}"}
+         |""".stripMargin
+    val response = Response(req.version, Status.InternalServerError)
+    response.setContentString(errorResponse)
+    response.setContentTypeJson()
+    response
+  }
 
   private def crateConversionCommand(req: Request) = {
     gson.fromJson(req.getContentString(), classOf[ConvertCommand])
