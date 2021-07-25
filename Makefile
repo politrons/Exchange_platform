@@ -1,10 +1,15 @@
-
+test:
+	sbt test
 build:
-	sbt 'set test in assembly := {}' clean assembly
+	sbt assembly
 
 run-conversion:
 	java -cp ./conversion_service/target/scala-2.12/conversion_service-assembly-0.1.0-SNAPSHOT.jar  com.politrons.app.ConversionServer
 run-currency-exchange:
+	java -cp ./currency_exchange_service/target/scala-2.12/currency_exchange_service-assembly-0.1.0-SNAPSHOT.jar com.politrons.app.CurrencyExchangeServer
+
+run-services:
+	java -cp ./conversion_service/target/scala-2.12/conversion_service-assembly-0.1.0-SNAPSHOT.jar  com.politrons.app.ConversionServer &
 	java -cp ./currency_exchange_service/target/scala-2.12/currency_exchange_service-assembly-0.1.0-SNAPSHOT.jar com.politrons.app.CurrencyExchangeServer
 
 test-request:

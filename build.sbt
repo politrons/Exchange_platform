@@ -21,7 +21,6 @@ lazy val conversion_service = project
   .in(file("conversion_service"))
   .settings(
     name := "conversion_service",
-    assembly / test := (Test / test).value,
     commonSettings
   )
 
@@ -29,7 +28,6 @@ lazy val currency_exchange_service = project
   .in(file("currency_exchange_service"))
   .settings(
     name := "currency_exchange_service",
-    assembly / test := (Test / test).value,
     commonSettings
   )
 
@@ -38,7 +36,6 @@ lazy val test_framework = project
   .dependsOn(conversion_service, currency_exchange_service)
   .settings(
     name := "test_framework",
-    assembly / test := (Test / test).value,
     commonSettings
   )
 

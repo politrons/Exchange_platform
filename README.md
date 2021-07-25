@@ -44,11 +44,31 @@ In my application I invested around 70% of the time implementing the test framew
 
 ## How to run
 
+There's two ways to build and run ```Exchange platform``` by **Docker** or **Makefile**
+
+### Docker
+
+To being able to build and run this project, it will require you have `````Docker deamon````` installed.
+
+Create the docker image, running in the root folder 
+````
+docker build -t exchange .
+````
+
+Once we pass all the test and we build the image, we create a container through the images.
+
+````
+docker run -p 9994:9994 exchange
+````
+
+### Makefile
+
 To being able to build and run this project, it will require you have `````sbt````` installed.
 
 I create a **Makefile** to add all the option to interact with the platform:
 
 * **clean:** Clean all the resources in the target folder.
+* **test** Run all the testing pyramid   
 * **build:** Build the platform and generate Fat jar for each service.
 * **run-conversion:** Run the Conversion server.
 * **run-currency-exchange:** Run the Currency exchange server.
@@ -58,6 +78,9 @@ I create a **Makefile** to add all the option to interact with the platform:
 Makefile clean|build|run-conversion|run-currency-exchange|test-request
 ````
 
+docker build .
+docker scan .
+
 ## Stack
 
-![My image](img/ZIO.png) ![My image](img/finagle.png)
+![My image](img/ZIO.png) ![My image](img/finagle.png) ![My image](img/docker.png)
