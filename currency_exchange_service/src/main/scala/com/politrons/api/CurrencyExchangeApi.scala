@@ -41,7 +41,9 @@ case class CurrencyExchangeApi(currencyExchangeEngine: CurrencyExchangeService) 
                 Future(response)
               case Left(t) =>
                 logger.error(s"Error in CurrencyExchangeApi. Caused by ${ExceptionUtils.getStackTrace(t)}")
-                Future.value(Response(req.version, Status.InternalServerError))
+                val response = Response(req.version, Status.InternalServerError)
+                response.setContentString(s"${t.getMessage}")
+                Future.value(response)
             }
         }
       }

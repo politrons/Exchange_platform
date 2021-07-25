@@ -77,7 +77,7 @@ case class ConversionDAO() {
     ZIO.effect {
       response.statusCode match {
         case 200 => response.getContentString()
-        case _ => throw new IllegalStateException(s"Error response ${response.statusCode} from CurrencyExchange server")
+        case _ => throw new IllegalStateException(s"Error response ${response.statusCode} from CurrencyExchange server. Caused by ${response.getContentString()}")
       }
     }
   }

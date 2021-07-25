@@ -39,7 +39,14 @@ case class ConversionApi(service: ConversionService,
                   response <- transformCurrencyExchangeIntoJson(req, conversion)
                 } yield Future.value(response)).catchAll(t => {
                   logger.error(s"[ConversionApi] Error in conversion request. Caused by ${ExceptionUtils.getStackTrace(t)}")
-                  ZIO.succeed(Future(Response(req.version, Status.InternalServerError)))
+                  val errorResponse =
+                    s"""
+                       |{ "message":"${t.getMessage}"}
+                       |""".stripMargin
+                  val response = Response(req.version, Status.InternalServerError)
+                  response.setContentString(errorResponse)
+                  response.setContentTypeJson()
+                  ZIO.succeed(Future(response))
                 })
                 val dependencies = ZLayer.succeed(crateConversionCommand(req)) ++ ZLayer.succeed(dao)
                 Runtime.global.unsafeRun(conversionProgram.provideLayer(dependencies))
@@ -57,8 +64,8 @@ case class ConversionApi(service: ConversionService,
   private def transformCurrencyExchangeIntoJson(req: Request, conversion: Conversion): Task[Response] = {
     ZIO.effect {
       val response = Response(req.version, Status.Ok)
-      response
-        .setContentString(gson.toJson(conversion))
+      response.setContentString(gson.toJson(conversion))
+      response.setContentTypeJson()
       response
     }
   }
