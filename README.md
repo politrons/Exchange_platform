@@ -87,8 +87,16 @@ I create a **Makefile** to add all the option to interact with the platform:
 Makefile clean|build|run-conversion|run-currency-exchange|test-request
 ````
 
-docker build .
-docker scan .
+## Currency
+
+The currency we have in the platform are:
+
+````
+    "GBR-EUR" -> 1.11
+    "EUR-GBR" -> 0.98
+    "EUR-USD" -> 0.87
+    "USD-EUR" -> 1.2
+````
 
 ## Stack
 
